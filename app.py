@@ -1,42 +1,45 @@
 import pandas as pd
-import time
+import glob
+import os
 
-# 1. 📄 اپنی ایکسل/سی ایس وی فائل کا نام یہاں لکھیں
-file_name = "your_file_name.csv" 
-
-def read_massive_file(file_path):
+def auto_read_csv_file():
+    print("🔄 Scanning folder for CSV files...")
+    
+    # 1. Automatically find all .csv files in the current folder
+    csv_files = glob.glob("*.csv")
+    
+    # If no CSV file is found in the folder
+    if not csv_files:
+        print("❌ Error: No CSV file found in this folder! Please place your file here first.")
+        return
+        
+    # 2. Select the first CSV file automatically
+    selected_file = csv_files[0]
+    print(f"✅ File found: '{selected_file}'")
+    print("🔄 Loading data, please wait...")
+    
     try:
-        print(f"🔄 Opening file '{file_path}' on your local system...")
-        start_time = time.time()
+        # 3. Read only the first 10 rows for a quick layout preview
+        df = pd.read_csv(selected_file, nrows=10, low_memory=False)
         
-        # 2. Fast preview to capture column names instantly
-        preview_df = pd.read_csv(file_path, nrows=5, low_memory=False)
-        print("✅ Columns detected successfully.")
-        
-        # 3. Reading the full file in chunks to protect your computer's RAM
-        print("🔄 Loading all data rows... Please wait a few seconds...")
+        # 4. Smart Counting: Calculate total rows in chunks to prevent RAM crashes
         total_rows = 0
-        for chunk in pd.read_csv(file_path, chunksize=100000, low_memory=False):
+        for chunk in pd.read_csv(selected_file, chunksize=100000, low_memory=False):
             total_rows += len(chunk)
             
-        end_time = time.time()
-        print(f"🎉 Success! Whole file loaded in {round(end_time - start_time, 2)} seconds with ZERO data loss.")
-        
-        # 4. Printing File Overview
         print("\n" + "="*50)
-        print("📊 FILE OVERVIEW")
+        print("📊 FILE OVERVIEW (AUTOMATIC)")
         print("="*50)
-        print(f"🔹 Total Rows inside this file : {total_rows:,}")
-        print(f"🔹 Total Columns inside this file: {len(preview_df.columns)}")
+        print(f"🔹 File Name : {selected_file}")
+        print(f"🔹 Total Rows : {total_rows:,}")
+        print(f"🔹 Total Columns : {len(df.columns)}")
         
-        # 5. Showing Top 5 Rows as sample data
-        print("\n👇 DATA SAMPLE (First 5 Rows):")
-        print(pd.read_csv(file_path, nrows=5, low_memory=False))
+        # 5. Display the data sample preview on the CMD screen
+        print("\n👇 Data Preview (First 10 Rows):")
+        print(df)
         
-    except FileNotFoundError:
-        print(f"❌ Error: '{file_path}' cannot be found! Make sure the file name is correct and it is inside the same folder.")
     except Exception as e:
-        print(f"❌ An error occurred: {str(e)}")
+        print(f"❌ An error occurred while opening the file: {str(e)}")
 
 if __name__ == "__main__":
-    read_massive_file(file_name)
+    auto_read_csv_file()
