@@ -1,36 +1,29 @@
 import pandas as pd
 import glob
 
-def play_local_file():
-    print("🔄 Scanning folder for your CSV file...")
-    
-    # Automatically find any CSV file in the same folder
+def show_just_two_rows():
+    print("🔄 Finding your CSV file...")
     csv_files = glob.glob("*.csv")
     
     if not csv_files:
-        print("❌ Error: No CSV file found in this folder! Put your file here.")
+        print("❌ Error: No CSV file found in this folder!")
         return
         
-    selected_file = csv_files[0]
-    print(f"✅ Found file: '{selected_file}'")
-    print("🔄 Opening file instantly (RAM Safe Mode)...")
+    file_name = csv_files[0]
+    print(f"✅ Opening: {file_name}")
     
     try:
-        # Crucial Part: Read ONLY 10 rows so your PC never freezes or hangs
-        df = pd.read_csv(selected_file, nrows=10, low_memory=False)
+        # Read exactly 2 rows + 1 header row
+        df = pd.read_csv(file_name, nrows=2, low_memory=False)
         
-        print("\n" + "="*50)
-        print("📊 DATA PREVIEW (SUCCESS)")
-        print("="*50)
-        print(f"🔹 File Name: {selected_file}")
-        print(f"🔹 Total Columns Detected: {len(df.columns)}\n")
-        
-        # Display the actual data right inside your CMD
-        print(df)
-        print("="*50)
+        print("\n" + "="*60)
+        print("📸 FILE IMAGE PREVIEW (1 Header + 2 Rows)")
+        print("="*60)
+        print(df.to_string())
+        print("="*60)
         
     except Exception as e:
-        print(f"❌ Error opening file: {str(e)}")
+        print(f"❌ Error: {str(e)}")
 
 if __name__ == "__main__":
-    play_local_file()
+    show_just_two_rows()
